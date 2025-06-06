@@ -1,0 +1,6 @@
+python-docx
+docxtpl
+openpyxl
+pandas
+python-dotenv
+azure-cognitiveservices-vision-customvision
