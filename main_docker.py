@@ -18,6 +18,33 @@ def sanear_imagen(origen):
         print(f"⚠️ No se pudo sanear la imagen {origen}: {e}")
         return origen
 
+def recortar_contador_gas(imagen_path, predicciones):
+    # Cargar imagen y obtener dimensiones
+    imagen = Image.open(imagen_path)
+    width, height = imagen.size
+
+    # Filtrar solo detecciones con etiqueta 'contador_gas' y probabilidad ≥ 0.08
+    detecciones_validas = [
+        p for p in predicciones
+        if p["tagName"] == "contador_gas" and p["probability"] >= 0.08
+    ]
+
+    if not detecciones_validas:
+        print(f"⚠️ No se encontró contador_gas confiable en {imagen_path}")
+        return None
+
+    # Tomar la detección con mayor probabilidad
+    mejor = max(detecciones_validas, key=lambda x: x["probability"])
+    box = mejor["boundingBox"]
+
+    # Calcular coordenadas reales
+    x1 = int(box["left"] * width)
+    y1 = int(box["top"] * height)
+    x2 = int((box["left"] + box["width"]) * width)
+    y2 = int((box["top"] + box["height"]) * height)
+
+    # Recortar y devolver
+    return imagen.crop((x1, y1, x2, y2))
 
 def corregir_orientacion(path):
     try:
